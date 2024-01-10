@@ -1,4 +1,4 @@
-using System.Diagnostics.Tracing;
+using System.Diagnostics;
 using App.Metrics;
 using GamesAPI.Data;
 using GamesAPI.Data.Dtos;
@@ -32,8 +32,7 @@ public class GameService : IGameService
         
         _metrics.Measure.Counter.Increment(MetricsRegistry.ReadGamesCounter);
 
-        return (game != null) ? new GameDto(game) : null;
-        
+        return (game != null) ? new GameDto(game) : null;  
     }
 
     public void AddGame(string name, string description)
@@ -45,6 +44,15 @@ public class GameService : IGameService
         
         _metrics.Measure.Counter.Increment(MetricsRegistry.CreatedGamesCounter);
 
+        using (var sleepActivity = Activity.Current?.Source.StartActivity("AddNewSpan"))
+        {
+            Thread.Sleep(1000);
+            /*using (var NewMethodAdding = Activity.Current?.Source.StartActivity("NewMethodAdding"))
+            {
+                Thread.Sleep(1000);
+            }*/
+        }
+            
     }
 
     public bool DeleteGame(int id)
